@@ -16,6 +16,7 @@
       "Bash(/dev/null)",
       "WebFetch(domain:help.figma.com)",
       "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:docs.mapbox.com)",
       "Bash(gh issue create:*)",
       "Bash(touch:*)",
       "Bash(afplay:*)",
@@ -50,7 +51,9 @@
       "Bash(true)",
       "Bash(rmdir:*)",
       "Bash(rm:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }
