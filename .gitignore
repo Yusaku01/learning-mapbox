@@ -5,6 +5,9 @@
 /.react-router/
 /build/
 
+# Vite cache
+.vite/
+
 # Claude configuration files
 .claude/
 CLAUDE.md
