@@ -4,3 +4,7 @@
 # React Router
 /.react-router/
 /build/
+
+# Claude configuration files
+.claude/
+CLAUDE.md
