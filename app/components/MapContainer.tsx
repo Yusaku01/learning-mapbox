@@ -1,18 +1,20 @@
-import { useEffect, useRef } from 'react';
-import { useMapbox } from '../hooks/useMapbox';
-import type { MapContainerProps } from '../types/mapbox';
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useMapbox } from "../hooks/useMapbox";
+import type { MapContainerProps } from "../types/mapbox";
 
 // 東京駅をデフォルト座標として設定
 const DEFAULT_COORDINATES = [139.7671, 35.6812] as [number, number];
 const DEFAULT_ZOOM = 10;
 
 export function MapContainer({
-  width = '100%',
-  height = '400px',
+  width = "100%",
+  height = "400px",
   center = DEFAULT_COORDINATES,
   zoom = DEFAULT_ZOOM,
-  styleUrl = 'mapbox://styles/mapbox/streets-v12',
-  className = '',
+  styleUrl = "mapbox://styles/mapbox/streets-v12",
+  className = "",
 }: MapContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { isInitialized, error, initializeMap } = useMapbox();
@@ -47,7 +49,7 @@ export function MapContainer({
           <div className="text-gray-600">マップを読み込み中...</div>
         </div>
       )}
-      
+
       {/* マップコンテナ */}
       <div
         ref={containerRef}

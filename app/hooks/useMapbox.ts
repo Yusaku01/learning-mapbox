@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getMapboxConfig } from '~/utils/mapbox-env';
-import type { MapboxMap, MapboxGL, MapInitializationOptions, UseMapboxReturn } from '~/types/mapbox';
+import type { MapboxMap, MapInitializationOptions, UseMapboxReturn } from '~/types/mapbox';
 import { DEFAULT_COORDINATES, DEFAULT_ZOOM } from '~/types/mapbox';
+import mapboxgl from 'mapbox-gl';
 
 /**
  * Mapbox GL JSマップを管理するカスタムフック
@@ -13,17 +14,24 @@ export function useMapbox(): UseMapboxReturn {
   const [error, setError] = useState<Error | null>(null);
   const mapRef = useRef<MapboxMap | null>(null);
 
-  // Mapbox GL JSサポートチェック
-  const isSupported = (globalThis as any).mapboxgl?.supported() ?? false;
+  // ブラウザ環境チェック
+  const isClient = typeof window !== 'undefined';
+  
+  // Mapbox GL JSサポートチェック（ブラウザ環境でのみ）
+  const isSupported = isClient ? mapboxgl.supported?.() ?? false : false;
 
   useEffect(() => {
+    if (!isClient) return;
     validateEnvironment();
-  }, [isSupported]);
+  }, [isSupported, isClient]);
 
   /**
    * ブラウザ環境と設定の検証
    */
   const validateEnvironment = useCallback(() => {
+    // ブラウザ環境でのみ実行
+    if (!isClient) return;
+    
     if (!isSupported) {
       setError(new Error('WebGL is not supported or Mapbox GL JS is not available'));
       return;
@@ -34,7 +42,7 @@ export function useMapbox(): UseMapboxReturn {
     } catch (err) {
       setError(err as Error);
     }
-  }, [isSupported]);
+  }, [isSupported, isClient]);
 
   /**
    * マップを初期化する
@@ -42,12 +50,16 @@ export function useMapbox(): UseMapboxReturn {
    * @param options マップ初期化オプション
    */
   const initializeMap = useCallback((container: HTMLElement, options: MapInitializationOptions) => {
+    // ブラウザ環境でのみ実行
+    if (!isClient) {
+      setError(new Error('Map initialization is only available in browser environment'));
+      return;
+    }
+
     try {
       cleanupPreviousMap();
 
       const config = getMapboxConfig();
-      const mapboxgl = (globalThis as any).mapboxgl as MapboxGL;
-      
       const map = new mapboxgl.Map({
         accessToken: config.accessToken,
         container: container,
@@ -64,7 +76,7 @@ export function useMapbox(): UseMapboxReturn {
       setError(err as Error);
       setIsInitialized(false);
     }
-  }, []);
+  }, [isClient]);
 
   /**
    * 前のマップインスタンスをクリーンアップ
