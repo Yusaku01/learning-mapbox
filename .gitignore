@@ -8,6 +8,12 @@
 # Vite cache
 .vite/
 
+# Environment variables
+.env.local
+.env.production
+.env.development
+.env
+
 # Claude configuration files
 .claude/
 CLAUDE.md
