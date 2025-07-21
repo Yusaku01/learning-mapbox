@@ -58,6 +58,7 @@ export function useMapbox(): UseMapboxReturn {
 
     try {
       cleanupPreviousMap();
+      setIsInitialized(false); // 初期化開始時にfalseに設定
 
       const config = getMapboxConfig();
       const map = new mapboxgl.Map({
@@ -68,11 +69,24 @@ export function useMapbox(): UseMapboxReturn {
         zoom: options.zoom,
       });
 
+      // マップの読み込み完了を待つ
+      map.on('load', () => {
+        console.log('Map loaded successfully');
+        setIsInitialized(true);
+      });
+
+      // エラーハンドリング
+      map.on('error', (e) => {
+        console.error('Map error:', e.error);
+        setError(e.error);
+        setIsInitialized(false);
+      });
+
       mapRef.current = map;
       setMapInstance(map);
-      setIsInitialized(true);
       setError(null);
     } catch (err) {
+      console.error('Map initialization error:', err);
       setError(err as Error);
       setIsInitialized(false);
     }
