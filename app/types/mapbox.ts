@@ -1,4 +1,6 @@
 // Mapbox GL JS型定義（基本的なもののみ）
+export type ControlPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
 export interface MapboxMap {
   on: (event: string, callback: (...args: any[]) => void) => void;
   off: (event: string, callback: (...args: any[]) => void) => void;
@@ -8,6 +10,8 @@ export interface MapboxMap {
   resize: () => void;
   getCenter: () => { lng: number; lat: number };
   getZoom: () => number;
+  addControl: (control: any, position?: ControlPosition) => any;
+  removeControl: (control: any) => void;
 }
 
 export interface MapboxGL {
@@ -49,6 +53,7 @@ export interface MapContainerProps {
   zoom?: number;
   styleUrl?: string;
   className?: string;
+  showNavigationControl?: boolean;
 }
 
 export interface UseMapboxReturn {

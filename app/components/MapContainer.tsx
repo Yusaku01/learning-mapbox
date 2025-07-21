@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useMapbox } from "../hooks/useMapbox";
 import type { MapContainerProps } from "../types/mapbox";
+import mapboxgl from "mapbox-gl";
 
 // 東京駅をデフォルト座標として設定
 const DEFAULT_COORDINATES = [139.7671, 35.6812] as [number, number];
@@ -15,9 +16,10 @@ export function MapContainer({
   zoom = DEFAULT_ZOOM,
   styleUrl = "mapbox://styles/mapbox/streets-v12",
   className = "",
+  showNavigationControl = true,
 }: MapContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isInitialized, error, initializeMap } = useMapbox();
+  const { mapInstance, isInitialized, error, initializeMap } = useMapbox();
 
   useEffect(() => {
     if (containerRef.current && !error) {
@@ -28,6 +30,19 @@ export function MapContainer({
       });
     }
   }, [initializeMap, center, zoom, styleUrl, error]);
+
+  // NavigationControlを追加
+  useEffect(() => {
+    if (mapInstance && isInitialized && showNavigationControl) {
+      const navigationControl = new mapboxgl.NavigationControl();
+      mapInstance.addControl(navigationControl, 'top-right');
+
+      // クリーンアップ関数
+      return () => {
+        mapInstance.removeControl(navigationControl);
+      };
+    }
+  }, [mapInstance, isInitialized, showNavigationControl]);
 
   // エラー状態の表示
   if (error) {
