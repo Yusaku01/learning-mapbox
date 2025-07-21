@@ -7,9 +7,9 @@ import mapboxgl from "mapbox-gl";
 import { getMapboxConfig } from "~/utils/mapbox-env";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const SearchBox = lazy(() => 
-  import("@mapbox/search-js-react").then(mod => ({ 
-    default: mod.SearchBox as any 
+const SearchBox = lazy(() =>
+  import("@mapbox/search-js-react").then((mod) => ({
+    default: mod.SearchBox as any,
   }))
 );
 
@@ -103,31 +103,32 @@ export function MapContainer({
       )}
 
       {/* 検索ボックス */}
-      {typeof window !== "undefined" && showSearchBox && mapInstance && isInitialized && (
-        <Suspense fallback={null}>
-          <div
-            className={`
+      {typeof window !== "undefined" &&
+        showSearchBox &&
+        mapInstance &&
+        isInitialized && (
+          <Suspense fallback={null}>
+            <div
+              className={`
               absolute top-4 left-4 z-20 w-80 max-w-[calc(100%-2rem)]
-              px-4 py-2 border border-gray-300 rounded-lg shadow-lg
               focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent
-              bg-white
               ${searchBoxProps.className || ""}
             `}
-          >
-            {React.createElement(SearchBox as any, {
-              accessToken: getMapboxConfig().accessToken,
-              map: mapInstance as any,
-              mapboxgl: mapboxgl,
-              marker: searchBoxProps.marker,
-              options: {
-                language: searchBoxProps.language || "ja",
-                country: searchBoxProps.country || "JP",
-              },
-              placeholder: searchBoxProps.placeholder,
-            })}
-          </div>
-        </Suspense>
-      )}
+            >
+              {React.createElement(SearchBox as any, {
+                accessToken: getMapboxConfig().accessToken,
+                map: mapInstance as any,
+                mapboxgl: mapboxgl,
+                marker: searchBoxProps.marker,
+                options: {
+                  language: searchBoxProps.language || "ja",
+                  country: searchBoxProps.country || "JP",
+                },
+                placeholder: searchBoxProps.placeholder,
+              })}
+            </div>
+          </Suspense>
+        )}
 
       {/* マップコンテナ */}
       <div
