@@ -54,6 +54,14 @@ export interface MapContainerProps {
   styleUrl?: string;
   className?: string;
   showNavigationControl?: boolean;
+  showSearchBox?: boolean;
+  searchBoxProps?: {
+    placeholder?: string;
+    language?: string;
+    country?: string;
+    marker?: boolean;
+    className?: string;
+  };
 }
 
 export interface UseMapboxReturn {

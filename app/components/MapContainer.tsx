@@ -4,6 +4,9 @@ import { useEffect, useRef } from "react";
 import { useMapbox } from "../hooks/useMapbox";
 import type { MapContainerProps } from "../types/mapbox";
 import mapboxgl from "mapbox-gl";
+import { SearchBox } from "@mapbox/search-js-react";
+import { getMapboxConfig } from "~/utils/mapbox-env";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 // 東京駅をデフォルト座標として設定
 const DEFAULT_COORDINATES = [139.7671, 35.6812] as [number, number];
@@ -17,6 +20,14 @@ export function MapContainer({
   styleUrl = "mapbox://styles/mapbox/streets-v12",
   className = "",
   showNavigationControl = true,
+  showSearchBox = true,
+  searchBoxProps = {
+    placeholder: "地名を検索...",
+    language: "ja",
+    country: "JP",
+    marker: true,
+    className: "",
+  },
 }: MapContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { mapInstance, isInitialized, error, initializeMap } = useMapbox();
@@ -36,15 +47,19 @@ export function MapContainer({
     let navigationControl: any = null;
 
     if (mapInstance && isInitialized && showNavigationControl) {
-      console.log('Adding NavigationControl', { mapInstance, isInitialized, showNavigationControl });
-      
+      console.log("Adding NavigationControl", {
+        mapInstance,
+        isInitialized,
+        showNavigationControl,
+      });
+
       navigationControl = new mapboxgl.NavigationControl();
-      
+
       try {
-        mapInstance.addControl(navigationControl, 'top-right');
-        console.log('NavigationControl added successfully');
+        mapInstance.addControl(navigationControl, "top-right");
+        console.log("NavigationControl added successfully");
       } catch (error) {
-        console.error('Failed to add NavigationControl:', error);
+        console.error("Failed to add NavigationControl:", error);
       }
     }
 
@@ -53,9 +68,9 @@ export function MapContainer({
       if (navigationControl && mapInstance) {
         try {
           mapInstance.removeControl(navigationControl);
-          console.log('NavigationControl removed');
+          console.log("NavigationControl removed");
         } catch (error) {
-          console.error('Failed to remove NavigationControl:', error);
+          console.error("Failed to remove NavigationControl:", error);
         }
       }
     };
@@ -74,13 +89,47 @@ export function MapContainer({
   }
 
   return (
-    <div className="mapbox-wrapper" style={{ width, height }}>
+    <div className="mapbox-wrapper relative" style={{ width, height }}>
       {/* ローディング状態 */}
       {!isInitialized && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
           <div className="text-gray-600">マップを読み込み中...</div>
         </div>
       )}
+
+      {/* 検索ボックス */}
+      {showSearchBox && mapInstance && isInitialized && (() => {
+        try {
+          const config = getMapboxConfig();
+          return (
+            <div 
+              className={`
+                absolute top-4 left-4 z-20 w-80 max-w-[calc(100%-2rem)]
+                px-4 py-2 border border-gray-300 rounded-lg shadow-lg
+                focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent
+                bg-white
+                ${searchBoxProps.className || ""}
+              `}
+            >
+              {/* @ts-ignore */}
+              <SearchBox
+                accessToken={config.accessToken}
+                map={mapInstance as any}
+                mapboxgl={mapboxgl}
+                marker={searchBoxProps.marker}
+                options={{
+                  language: searchBoxProps.language || "ja",
+                  country: searchBoxProps.country || "JP",
+                }}
+                placeholder={searchBoxProps.placeholder}
+              />
+            </div>
+          );
+        } catch (err) {
+          console.error('Failed to render SearchBox:', err);
+          return null;
+        }
+      })()}
 
       {/* マップコンテナ */}
       <div
