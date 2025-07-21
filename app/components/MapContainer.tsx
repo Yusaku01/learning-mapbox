@@ -33,15 +33,32 @@ export function MapContainer({
 
   // NavigationControlを追加
   useEffect(() => {
-    if (mapInstance && isInitialized && showNavigationControl) {
-      const navigationControl = new mapboxgl.NavigationControl();
-      mapInstance.addControl(navigationControl, 'top-right');
+    let navigationControl: any = null;
 
-      // クリーンアップ関数
-      return () => {
-        mapInstance.removeControl(navigationControl);
-      };
+    if (mapInstance && isInitialized && showNavigationControl) {
+      console.log('Adding NavigationControl', { mapInstance, isInitialized, showNavigationControl });
+      
+      navigationControl = new mapboxgl.NavigationControl();
+      
+      try {
+        mapInstance.addControl(navigationControl, 'top-right');
+        console.log('NavigationControl added successfully');
+      } catch (error) {
+        console.error('Failed to add NavigationControl:', error);
+      }
     }
+
+    // クリーンアップ関数
+    return () => {
+      if (navigationControl && mapInstance) {
+        try {
+          mapInstance.removeControl(navigationControl);
+          console.log('NavigationControl removed');
+        } catch (error) {
+          console.error('Failed to remove NavigationControl:', error);
+        }
+      }
+    };
   }, [mapInstance, isInitialized, showNavigationControl]);
 
   // エラー状態の表示
